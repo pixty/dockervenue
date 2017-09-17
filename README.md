@@ -15,3 +15,5 @@ Please consider installing a proxy to speedup docker's apt-get:
 sudo apt-get install -y squid-deb-proxy
 
 Then run: sudo make build_image
+
+See the box directory for details about how-to use the image on the real hardware

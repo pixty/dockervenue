@@ -1,0 +1,54 @@
+#! /bin/bash
+
+./frame_processor --scn_no_visual=1 \
+		  --cam_width=1280 \
+		  --cam_height=720 \
+		  --cam_fps=5 \
+		  --cam_brightness=170 \
+		  --cam_fourcc=YUYV \
+		  --hog_grayscale=1 \
+		  --hog_width=320 \
+		  --hog_height=200 \
+		  &> ./logs/frame_processor.log
+# Allowed options:
+#  -h [ --help ]                         Print usage message
+#  --debug arg (=0)                      Enable debug log level
+#  --res_path arg                        Path to the data files place.
+#  --src_file arg                        Read frame stream from the file
+#  --sp_address arg (=localhost:50051)   Address for connecting to Service 
+#                                        provider.
+#  --access_key arg                      Authentication access key
+#  --secret_key arg                      Authentication secret key
+#  --dst_display arg (=0)                Don't try to detect, but snow camera 
+#                                        video-stream on the screen.
+#  --scn_no_visual arg (=0)              Do not visualize scene detection (no 
+#                                        video scene on the screen).
+#  --hog_width arg (=-1)                 Width of HOG's frame
+#  --hog_height arg (=-1)                Height of HOG's frame
+#  --hog_grayscale arg (=0)              HOG uses grayscaled frames
+#  --cam_width arg (=-1)                 Width of camera's frame
+#  --cam_height arg (=-1)                Height of camera's frame
+#  --cam_fps arg (=-1)                   Camera's FPS
+#  --cam_brightness arg (=-1)            Camera's brightness (int): min=0 
+#                                        max=255 step=1 default=128
+#  --cam_contrast arg (=-1)              Camera's contrast (int): min=0 max=255 
+#                                        step=1 default=128
+#  --cam_saturation arg (=-1)            Camera's saturation (int): min=0 
+#                                        max=255 step=1 default=128
+#  --cam_gain arg (=-1)                  Camera's gain (int): min=0 max=255 
+#                                        step=1 default=0
+#  --cam_exposure_auto arg (=-1)         Camera's exposure_auto (menu): min=0 
+#                                        max=3 default=3 value=3
+#  --cam_exposure_absolute arg (=-1)     Camera's exposure_absolute (int): min=3
+#                                        max=2047 step=1 default=250
+#  --cam_autofocus arg (=1)              Camera's focus_auto (bool): default=1
+#  --cam_fourcc arg                      Camera's fourcc, for instance MJPG, YUYV, H264
+#  --cam_sharpness arg (=-1)             Camera's sharpness (int): min=0 max=255
+#                                        step=1 default=128
+#  --cam_backlight_compensation arg (=-1)
+#                                        Camera's backlight_compensation (int): 
+#                                        min=0 max=1 step=1 default=0
+#  --cam_white_balance_temperature arg (=-1)
+#                                        Camera's white_balance_temperature 
+#                                        (int): min=2000 max=6500 step=1 
+#                                        default=4000

@@ -1,6 +1,7 @@
-FROM    ubuntu:zesty-20170703
+FROM    ubuntu:artful-20170826
 # 16.04, xenial-20170802
 # 17.04, zesty-20170703
+# 17.10, artful-20170826
 
 #################################################################################
 # Dumb caching, sorry about that ...
@@ -37,7 +38,7 @@ RUN dpkg-reconfigure --frontend noninteractive tzdata
 
 RUN apt-get install -y \
                        # c/c++, env
-                       build-essential cmake git curl ccache \
+                       build-essential cmake git curl ccache daemontools \
                        # GRPC
                        autoconf libtool clang libc++-dev libgflags-dev libgtest-dev \
                        # OPENCV::GUI
@@ -62,23 +63,7 @@ RUN apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# gcc: processor specific options of the target processor
-# To get the glue run the command below on the target platform
-#   $ gcc -### -march=native /usr/include/stdlib.h
-ENV CFLAGS -pipe -fomit-frame-pointer \
--march=silvermont -mmmx -mno-3dnow -msse -msse2 -msse3 -mssse3 -mno-sse4a \
--mcx16 -msahf -mmovbe -maes -mno-sha -mpclmul -mpopcnt -mno-abm -mno-lwp \
--mno-fma -mno-fma4 -mno-xop -mno-bmi -mno-bmi2 -mno-tbm -mno-avx -mno-avx2 \
--msse4.2 -msse4.1 -mno-lzcnt -mno-rtm -mno-hle -mrdrnd -mno-f16c -mno-fsgsbase \
--mno-rdseed -mprfchw -mno-adx -mfxsr -mno-xsave -mno-xsaveopt -mno-avx512f \
--mno-avx512er -mno-avx512cd -mno-avx512pf -mno-prefetchwt1 -mno-clflushopt \
--mno-xsavec -mno-xsaves -mno-avx512dq -mno-avx512bw -mno-avx512vl \
--mno-avx512ifma -mno-avx512vbmi -mno-clwb -mno-mwaitx -mno-clzero -mno-pku \
---param "l1-cache-size=24" --param "l1-cache-line-size=64" \
---param "l2-cache-size=1024" -mtune=generic
-ENV CXXFLAGS $CFLAGS
-
-# Build c++ libraries
+# Download grpc
 ARG COMPILE_ROOT=/compile_root
 RUN mkdir $COMPILE_ROOT && \
     # Build grpc
@@ -86,8 +71,37 @@ RUN mkdir $COMPILE_ROOT && \
     git clone https://github.com/grpc/grpc && \
     cd grpc && \
     git checkout tags/v1.4.2 && \
-    git submodule update --init --recursive && \
-    make -j4 && \
+    git submodule update --init --recursive
+
+# Download opencv
+RUN cd $COMPILE_ROOT && \
+    git clone https://github.com/opencv/opencv && \
+    cd opencv && \
+    git checkout tags/3.3.0 && \
+    mkdir build
+
+
+# Build c++ libraries
+# gcc: processor specific options of the target processor
+# To get the glue run the command below on the target platform
+#   $ gcc -### -march=native /usr/include/stdlib.h
+ENV CFLAGS -pipe -fomit-frame-pointer \
+"-march=silvermont" -mmmx -mno-3dnow -msse -msse2 -msse3 -mssse3 -mno-sse4a \
+-mcx16 -msahf -mmovbe -maes -mno-sha -mpclmul -mpopcnt -mno-abm -mno-lwp \
+-mno-fma -mno-fma4 -mno-xop -mno-bmi -mno-sgx -mno-bmi2 -mno-tbm -mno-avx -mno-avx2 \
+-msse4.2 -msse4.1 -mno-lzcnt -mno-rtm -mno-hle -mrdrnd -mno-f16c -mno-fsgsbase \
+-mno-rdseed -mprfchw -mno-adx -mfxsr -mno-xsave -mno-xsaveopt -mno-avx512f \
+-mno-avx512er -mno-avx512cd -mno-avx512pf -mno-prefetchwt1 -mno-clflushopt \
+-mno-xsavec -mno-xsaves -mno-avx512dq -mno-avx512bw -mno-avx512vl -mno-avx512ifma \
+-mno-avx512vbmi -mno-avx5124fmaps -mno-avx5124vnniw -mno-clwb -mno-mwaitx -mno-clzero \
+-mno-pku -mno-rdpid --param "l1-cache-size=24" --param "l1-cache-line-size=64" \
+--param "l2-cache-size=1024" "-mtune=generic"
+
+ENV CXXFLAGS $CFLAGS
+
+RUN cd $COMPILE_ROOT/grpc && \
+    make -j4 CFLAGS="$(CFLAGS) -Wno-error" \
+             CXXFLAGS="$(CXXFLAGS) -Wno-error" && \
     make install && \
     ldconfig && \
     # Install protobuf ('make' should have been run by core grpc)
@@ -97,13 +111,7 @@ RUN mkdir $COMPILE_ROOT && \
     # Cleanup
     rm -rf grpc
 
-# Build opencv + opencv_contrib
-RUN cd $COMPILE_ROOT && \
-    git clone https://github.com/opencv/opencv && \
-    cd opencv && \
-    git checkout tags/3.3.0 && \
-    mkdir build && \
-    cd build && \
+RUN cd $COMPILE_ROOT/opencv/build && \
     cmake -DCMAKE_BUILD_TYPE=Release \
           -DWITH_OPENGL=ON -DWITH_TBB=ON -DWITH_GDAL=ON \
           -DWITH_XINE=ON -DENABLE_PRECOMPILED_HEADERS=OFF .. && \
