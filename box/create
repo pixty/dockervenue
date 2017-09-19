@@ -1,0 +1,7 @@
+sudo docker create \
+            --name frame_processor \
+            --volume /home/pixty/Development/dockervenue/product/frame_processor:/opt/frame_processor \
+            --workdir /opt/frame_processor \
+            --device=/dev/video0:/dev/video0 \
+            --entrypoint=/opt/frame_processor/run \
+            pixty_build_srv:latest
