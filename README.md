@@ -3,11 +3,17 @@ The repo contains a configuration and some commands to make a docker image which
 
 ## Directory structure
 `Makefile` - The root directory contains Makefile which simply builds an docker image with name *pixty_build_srv* 
+
 `README.md` - the text is there
+
 `new_build_container.sh` - creates a container from docker image (should be build first) without camera access. Used for building FP purposes only
+
 `new_container.sh` - creates a container from docker image (should be build first) with camera access on the host system. Will work on Linux only. Should be used on box for running FP 
+
 `start_container.sh` - starts existing container with name *pixty_container*
+
 `connect_to_container.sh` - connects to started container 
+
 `images/build_srv/Dockerfile` - the dockerfile to make the latest image 
 
 ## Install Docker
@@ -41,7 +47,7 @@ docker load --input filename.img
 ```
 
 ## Building Frame Processor in the container
-1. Start the container, mounting Frame Processor sources to the container. To do this, pleae replace the *<FP_SRC_PATH>* by the path to the frome processor and run the command:
+1. Start the container, mounting FP sources to the container. To do this, please replace the *<FP_SRC_PATH>* by the path to the frome processor and run the command:
 ```
 docker run --name pixty_container --interactive --tty --volume <FP_SRC_PATH>:/opt/compile_area/github.com/pixty pixty_build_srv:latest
 ```
