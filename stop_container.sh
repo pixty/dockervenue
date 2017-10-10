@@ -1,1 +1,1 @@
-sudo docker stop pixty_build_service
+sudo docker stop pixty_container

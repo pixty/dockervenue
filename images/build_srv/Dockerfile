@@ -8,13 +8,13 @@ FROM    ubuntu:artful-20170826
 # install the proxy on the HOST to speedup docker's apt-get by caching
 # sudo apt-get install -y squid-deb-proxy
 # typicaly it runs on 8000 port
-ARG APT_PROXY_PORT=
-COPY ./detect-proxy.sh ./optimizations.sh /root/scripts/apt/
+#ARG APT_PROXY_PORT=
+#COPY ./detect-proxy.sh ./optimizations.sh /root/scripts/apt/
 
-RUN /root/scripts/apt/optimizations.sh && \
-    /root/scripts/apt/detect-proxy.sh ${APT_PROXY_PORT} && \
-    # Cleanup
-    rm -rf /root/scripts
+#RUN /root/scripts/apt/optimizations.sh && \
+#    /root/scripts/apt/detect-proxy.sh ${APT_PROXY_PORT} && \
+#    # Cleanup
+#    rm -rf /root/scripts
 # End of caching
 #################################################################################
 
@@ -70,7 +70,7 @@ RUN mkdir $COMPILE_ROOT && \
     cd $COMPILE_ROOT && \
     git clone https://github.com/grpc/grpc && \
     cd grpc && \
-    git checkout tags/v1.4.2 && \
+    git checkout tags/v1.4.6 && \
     git submodule update --init --recursive
 
 # Download opencv
@@ -109,7 +109,7 @@ RUN cd $COMPILE_ROOT/grpc && \
     make install && \
     ldconfig && \
     # Cleanup
-    rm -rf grpc
+    rm -rf $COMPILE_ROOT/grpc $COMPILE_ROOT/protobuf
 
 RUN cd $COMPILE_ROOT/opencv/build && \
     cmake -DCMAKE_BUILD_TYPE=Release \

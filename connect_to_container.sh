@@ -1,1 +1,1 @@
-sudo docker exec -it pixty_build_service /bin/bash
+sudo docker exec -it pixty_container /bin/bash
